@@ -1,0 +1,65 @@
+@startuml
+
+package Examination <<Aggregate>> {
+class Examination <<Aggregate Root>> {
+    examinationId: ExaminationId
+    paper: Paper
+    startTime: Date
+    endTime: Date
+
+    create(): Examination
+}
+
+class "Paper" as a <<Value Object>> {
+    blankQuizzes: List<BlankQuiz>
+}
+
+class "BlankQuiz" as b <<Value Object>> {
+    content: String
+    score: Int
+}
+
+Examination "1" *--> "1" a
+a "1" *--> "5..20" b
+}
+
+package Paper <<Aggregate>> {
+    class Paper <<Aggregate Root>> {
+        paperId: PaperId
+        blankQuizzes: List<BlankQuiz>
+        createTime: Date
+        updateTime: Date
+
+        assemble(): Paper
+        reAssemble(): Paper
+    }
+
+    class BlankQuiz <<Value Object>> {
+         content: String
+         score: Int
+    }
+    Paper "1" *--> "*" BlankQuiz
+}
+
+package AnswerSheet <<Aggregate>> {
+class AnswerSheet <<Aggregate Root>> {
+    answerSheetId: AnswerSheetId
+    studentId: StudentId
+    score: Int
+    examinationId: ExaminationId
+    blankQuizzes: List<BlankQuiz>
+
+    assign(): void
+    handIn(): void
+    review(): int
+}
+
+class "BlankQuiz" as c <<Value Object>> {
+    content: String
+    score: Int
+}
+
+AnswerSheet "1" *--> "*" c
+}
+
+@enduml
