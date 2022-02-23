@@ -3,24 +3,28 @@
 package Examination <<Aggregate>> {
 class Examination <<Aggregate Root>> {
     examinationId: ExaminationId
+    courseId: CourseId
+    teacherId: String
     paper: Paper
+    createTime: Date
     startTime: Date
     endTime: Date
 
     create(): Examination
+    start()
 }
 
 class "Paper" as a <<Value Object>> {
     blankQuizzes: List<BlankQuiz>
 }
 
-class "BlankQuiz" as b <<Value Object>> {
+class "BlankQuiz" as eb <<Value Object>> {
     content: String
     score: Int
 }
 
 Examination "1" *--> "1" a
-a "1" *--> "5..20" b
+a "1" *--> "5..20" eb
 }
 
 package Paper <<Aggregate>> {
@@ -34,32 +38,65 @@ package Paper <<Aggregate>> {
         reAssemble(): Paper
     }
 
-    class BlankQuiz <<Value Object>> {
+    class "BlankQuiz" as pb <<Value Object>> {
          content: String
          score: Int
     }
-    Paper "1" *--> "*" BlankQuiz
+    Paper "1" *--> "5..20" pb
 }
 
 package AnswerSheet <<Aggregate>> {
 class AnswerSheet <<Aggregate Root>> {
     answerSheetId: AnswerSheetId
+    examinationId: ExaminationId
     studentId: StudentId
     score: Int
-    examinationId: ExaminationId
     blankQuizzes: List<BlankQuiz>
 
-    assign(): void
+    assignStudent(): AnswerSheet
     handIn(): void
     review(): int
 }
 
-class "BlankQuiz" as c <<Value Object>> {
+class "BlankQuiz" as ab <<Value Object>> {
     content: String
-    score: Int
+    answer: String
+    referenceAnswer: String
+    score: int
+    gotScore: int
 }
 
-AnswerSheet "1" *--> "*" c
+AnswerSheet "1" *--> "*" ab
+}
+
+package BlankQuiz <<Aggregate>> {
+class "BlankQuiz" as bq <<Aggregate Root>> {
+    blankQuizId: BlankQuizId
+    content: String
+    referenceAnswer: String
+
+    create(): BlankQuiz
+    update(): BlankQuiz
+    delete(): void
+}
+}
+
+package Course <<Aggregate>> {
+class "Course" <<Aggregate Root>> {
+courseId: CourseId
+create(): Course
+publish(): Course
+}
+}
+
+package Certification <<Aggregate>> {
+class Certification <<Aggregate Root>> {
+certificationId: CertificationId
+courseId: CourseId
+studentId: StudentId
+
+generate(): Certification
+}
 }
 
 @enduml
